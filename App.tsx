@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { AppMode, PlantInfo, DiagnosisResult, SavedPlant, ChatMessage, SearchResult } from './types';
 import { identifyPlant, diagnosePlant, chatWithBotanist, searchProducts } from './services/geminiService';
+import { initDB, getPlants, savePlant, deletePlant } from './services/dbService';
 import Navigation from './components/Navigation';
 import ImageUploader from './components/ImageUploader';
 import PlantCard from './components/PlantCard';
@@ -31,31 +32,52 @@ const App: React.FC = () => {
   // Garden State
   const [myGarden, setMyGarden] = useState<SavedPlant[]>([]);
   const [gardenSearch, setGardenSearch] = useState('');
+  const [isGardenLoading, setIsGardenLoading] = useState(true);
 
+  // Initialize DB and load garden on mount
   useEffect(() => {
-    const saved = localStorage.getItem('myGarden');
-    if (saved) {
-      setMyGarden(JSON.parse(saved));
-    }
+    const loadGarden = async () => {
+      try {
+        await initDB();
+        const plants = await getPlants();
+        // Sort by date added, newest first
+        setMyGarden(plants.sort((a, b) => b.dateAdded - a.dateAdded));
+      } catch (err) {
+        console.error("Failed to load garden from database:", err);
+      } finally {
+        setIsGardenLoading(false);
+      }
+    };
+    loadGarden();
   }, []);
 
-  const saveToGarden = (plant: PlantInfo) => {
+  const saveToGarden = async (plant: PlantInfo) => {
     if (!identifyImage) return;
+    
     const newPlant: SavedPlant = {
       ...plant,
       id: Date.now().toString(),
       imageUrl: `data:image/jpeg;base64,${identifyImage}`,
       dateAdded: Date.now()
     };
-    const updatedGarden = [...myGarden, newPlant];
-    setMyGarden(updatedGarden);
-    localStorage.setItem('myGarden', JSON.stringify(updatedGarden));
+
+    try {
+      await savePlant(newPlant);
+      setMyGarden(prev => [newPlant, ...prev]);
+    } catch (err) {
+      console.error("Failed to save plant to database:", err);
+      alert("Failed to save plant. Please try again.");
+    }
   };
 
-  const removeFromGarden = (id: string) => {
-    const updatedGarden = myGarden.filter(p => p.id !== id);
-    setMyGarden(updatedGarden);
-    localStorage.setItem('myGarden', JSON.stringify(updatedGarden));
+  const removeFromGarden = async (id: string) => {
+    try {
+      await deletePlant(id);
+      setMyGarden(prev => prev.filter(p => p.id !== id));
+    } catch (err) {
+      console.error("Failed to delete plant from database:", err);
+      alert("Failed to remove plant. Please try again.");
+    }
   };
 
   const handleIdentify = async (base64: string) => {
@@ -443,8 +465,12 @@ const App: React.FC = () => {
                  />
               </div>
             )}
-
-            {myGarden.length === 0 ? (
+            
+            {isGardenLoading ? (
+              <div className="flex justify-center py-20">
+                <div className="w-10 h-10 border-4 border-emerald-200 border-t-emerald-600 rounded-full animate-spin"></div>
+              </div>
+            ) : myGarden.length === 0 ? (
               <div className="text-center py-20 bg-slate-50 rounded-3xl border-2 border-dashed border-slate-200">
                 <Sprout className="w-16 h-16 text-slate-300 mx-auto mb-4" />
                 <h3 className="text-lg font-semibold text-slate-700 mb-2">Your garden is empty</h3>
