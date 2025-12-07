@@ -5,7 +5,7 @@ import Navigation from './components/Navigation';
 import ImageUploader from './components/ImageUploader';
 import PlantCard from './components/PlantCard';
 import DiagnosisCard from './components/DiagnosisCard';
-import { Sprout, Send, Bot, User, ArrowRight, Wind, Plus, Trash2, ExternalLink } from 'lucide-react';
+import { Sprout, Send, Bot, User, ArrowRight, Wind, Plus, Trash2, ExternalLink, MessageCircle, LayoutGrid, Leaf } from 'lucide-react';
 
 const App: React.FC = () => {
   const [mode, setMode] = useState<AppMode>(AppMode.HOME);
@@ -163,47 +163,114 @@ const App: React.FC = () => {
     switch (mode) {
       case AppMode.HOME:
         return (
-          <div className="flex flex-col items-center justify-center min-h-[80vh] text-center px-4">
-            <div className="bg-emerald-100 p-6 rounded-full mb-8 animate-bounce-slow">
-              <Sprout className="w-16 h-16 text-emerald-600" />
+          <div className="max-w-4xl mx-auto px-4 py-6 md:py-10 pb-24 animate-fade-in-up">
+            {/* Hero Section */}
+            <div className="relative w-full h-72 md:h-96 rounded-3xl overflow-hidden mb-8 shadow-2xl group">
+              <img 
+                src="https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?auto=format&fit=crop&q=80&w=1200" 
+                alt="Lush Garden" 
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/20 to-transparent"></div>
+              <div className="absolute bottom-0 left-0 p-6 md:p-12 max-w-2xl">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="p-2 bg-emerald-500/20 backdrop-blur-md rounded-lg border border-emerald-500/30">
+                    <Sprout className="w-5 h-5 text-emerald-400" />
+                  </div>
+                  <span className="text-emerald-400 font-semibold tracking-wide uppercase text-xs md:text-sm">Powered by Gemini AI</span>
+                </div>
+                <h1 className="text-4xl md:text-6xl font-bold text-white mb-4 tracking-tight shadow-sm">
+                  Greenthumb<span className="text-emerald-400">AI</span>
+                </h1>
+                <p className="text-lg md:text-xl text-slate-200 leading-relaxed font-light shadow-sm max-w-lg">
+                  Your intelligent companion for a thriving garden. Identify plants, diagnose diseases, and get expert care tips instantly.
+                </p>
+              </div>
             </div>
-            <h1 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4 tracking-tight">
-              Greenthumb<span className="text-emerald-600">AI</span>
-            </h1>
-            <p className="text-lg text-slate-600 max-w-lg mb-10 leading-relaxed">
-              Your intelligent companion for a thriving garden. Identify plants, diagnose issues, and get expert advice instantly.
-            </p>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-md">
+
+            {/* Main Action Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+              {/* Identify Card */}
               <button 
                 onClick={() => setMode(AppMode.IDENTIFY)}
-                className="group relative flex items-center justify-between p-6 bg-white border border-slate-100 rounded-2xl shadow-sm hover:shadow-lg hover:border-emerald-200 transition-all"
+                className="relative h-64 rounded-3xl overflow-hidden group shadow-xl transition-all hover:shadow-2xl hover:-translate-y-1"
               >
-                <div className="flex items-center gap-4">
-                  <div className="p-3 bg-blue-50 text-blue-600 rounded-xl group-hover:scale-110 transition-transform">
-                    <Wind className="w-6 h-6" />
-                  </div>
-                  <div className="text-left">
-                    <span className="block font-bold text-slate-800">Identify</span>
-                    <span className="text-xs text-slate-500">What plant is this?</span>
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 to-transparent z-10"></div>
+                <img 
+                  src="https://images.unsplash.com/photo-1525043187140-e22301548a31?auto=format&fit=crop&q=80&w=800" 
+                  alt="Identify Plant" 
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                />
+                <div className="absolute bottom-0 left-0 right-0 p-8 z-20">
+                  <div className="flex justify-between items-end">
+                    <div>
+                      <div className="p-3 bg-white/20 backdrop-blur-md rounded-2xl w-fit mb-4 border border-white/10">
+                        <Wind className="w-8 h-8 text-white" />
+                      </div>
+                      <h3 className="text-2xl font-bold text-white mb-1">Identify</h3>
+                      <p className="text-slate-300 text-sm font-medium">Discover plant names & care guides</p>
+                    </div>
+                    <div className="bg-white rounded-full p-3 opacity-0 group-hover:opacity-100 transform translate-x-4 group-hover:translate-x-0 transition-all duration-300">
+                      <ArrowRight className="w-6 h-6 text-emerald-600" />
+                    </div>
                   </div>
                 </div>
-                <ArrowRight className="w-5 h-5 text-slate-300 group-hover:text-emerald-500 group-hover:translate-x-1 transition-all" />
               </button>
-              
+
+              {/* Diagnose Card */}
               <button 
                 onClick={() => setMode(AppMode.DIAGNOSE)}
-                className="group relative flex items-center justify-between p-6 bg-white border border-slate-100 rounded-2xl shadow-sm hover:shadow-lg hover:border-emerald-200 transition-all"
+                className="relative h-64 rounded-3xl overflow-hidden group shadow-xl transition-all hover:shadow-2xl hover:-translate-y-1"
               >
-                <div className="flex items-center gap-4">
-                  <div className="p-3 bg-red-50 text-red-600 rounded-xl group-hover:scale-110 transition-transform">
-                    <Plus className="w-6 h-6" />
-                  </div>
-                  <div className="text-left">
-                    <span className="block font-bold text-slate-800">Heal</span>
-                    <span className="text-xs text-slate-500">Fix sick plants</span>
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 to-transparent z-10"></div>
+                <img 
+                  src="https://images.unsplash.com/photo-1628676130672-31f620cb18b4?auto=format&fit=crop&q=80&w=800" 
+                  alt="Diagnose Plant" 
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                />
+                <div className="absolute bottom-0 left-0 right-0 p-8 z-20">
+                  <div className="flex justify-between items-end">
+                    <div>
+                      <div className="p-3 bg-white/20 backdrop-blur-md rounded-2xl w-fit mb-4 border border-white/10">
+                        <Plus className="w-8 h-8 text-white" />
+                      </div>
+                      <h3 className="text-2xl font-bold text-white mb-1">Heal</h3>
+                      <p className="text-slate-300 text-sm font-medium">Diagnose issues & find treatments</p>
+                    </div>
+                    <div className="bg-white rounded-full p-3 opacity-0 group-hover:opacity-100 transform translate-x-4 group-hover:translate-x-0 transition-all duration-300">
+                      <ArrowRight className="w-6 h-6 text-rose-500" />
+                    </div>
                   </div>
                 </div>
-                <ArrowRight className="w-5 h-5 text-slate-300 group-hover:text-emerald-500 group-hover:translate-x-1 transition-all" />
+              </button>
+            </div>
+
+            {/* Secondary Actions */}
+            <div className="grid grid-cols-2 gap-4 md:gap-6">
+              <button 
+                onClick={() => setMode(AppMode.CHAT)}
+                className="bg-white p-4 md:p-6 rounded-2xl shadow-sm border border-slate-100 hover:border-emerald-200 hover:shadow-md transition-all text-left flex flex-col md:flex-row md:items-center gap-3 md:gap-4 group"
+              >
+                <div className="p-3 bg-indigo-50 text-indigo-600 rounded-xl group-hover:scale-110 transition-transform w-fit">
+                  <MessageCircle className="w-6 h-6" />
+                </div>
+                <div>
+                  <h4 className="font-bold text-slate-800">Ask Expert</h4>
+                  <p className="text-xs text-slate-500 mt-1">Chat with AI Botanist</p>
+                </div>
+              </button>
+
+              <button 
+                onClick={() => setMode(AppMode.GARDEN)}
+                className="bg-white p-4 md:p-6 rounded-2xl shadow-sm border border-slate-100 hover:border-emerald-200 hover:shadow-md transition-all text-left flex flex-col md:flex-row md:items-center gap-3 md:gap-4 group"
+              >
+                <div className="p-3 bg-amber-50 text-amber-600 rounded-xl group-hover:scale-110 transition-transform w-fit">
+                  <Leaf className="w-6 h-6" />
+                </div>
+                <div>
+                  <h4 className="font-bold text-slate-800">My Garden</h4>
+                  <p className="text-xs text-slate-500 mt-1">View saved plants</p>
+                </div>
               </button>
             </div>
           </div>
