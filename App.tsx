@@ -5,7 +5,7 @@ import Navigation from './components/Navigation';
 import ImageUploader from './components/ImageUploader';
 import PlantCard from './components/PlantCard';
 import DiagnosisCard from './components/DiagnosisCard';
-import { Sprout, Send, Bot, User, ArrowRight, Wind, Plus, Trash2, ExternalLink, MessageCircle, LayoutGrid, Leaf } from 'lucide-react';
+import { Sprout, Send, Bot, User, ArrowRight, Wind, Plus, Trash2, ExternalLink, MessageCircle, LayoutGrid, Leaf, Search } from 'lucide-react';
 
 const App: React.FC = () => {
   const [mode, setMode] = useState<AppMode>(AppMode.HOME);
@@ -30,6 +30,7 @@ const App: React.FC = () => {
 
   // Garden State
   const [myGarden, setMyGarden] = useState<SavedPlant[]>([]);
+  const [gardenSearch, setGardenSearch] = useState('');
 
   useEffect(() => {
     const saved = localStorage.getItem('myGarden');
@@ -167,7 +168,7 @@ const App: React.FC = () => {
             {/* Hero Section */}
             <div className="relative w-full h-72 md:h-96 rounded-3xl overflow-hidden mb-8 shadow-2xl group">
               <img 
-                src="https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?auto=format&fit=crop&q=80&w=1200" 
+                src="https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?q=80&w=1200&auto=format&fit=crop" 
                 alt="Lush Garden" 
                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
               />
@@ -197,7 +198,7 @@ const App: React.FC = () => {
               >
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 to-transparent z-10"></div>
                 <img 
-                  src="https://images.unsplash.com/photo-1525043187140-e22301548a31?auto=format&fit=crop&q=80&w=800" 
+                  src="https://images.unsplash.com/photo-1530968464165-7a1861cbaf9f?q=80&w=800&auto=format&fit=crop" 
                   alt="Identify Plant" 
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                 />
@@ -224,7 +225,7 @@ const App: React.FC = () => {
               >
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 to-transparent z-10"></div>
                 <img 
-                  src="https://images.unsplash.com/photo-1628676130672-31f620cb18b4?auto=format&fit=crop&q=80&w=800" 
+                  src="https://images.unsplash.com/photo-1463320898484-cdee8141c787?q=80&w=800&auto=format&fit=crop" 
                   alt="Diagnose Plant" 
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                 />
@@ -420,10 +421,28 @@ const App: React.FC = () => {
         );
 
       case AppMode.GARDEN:
+        const filteredGarden = myGarden.filter(plant => 
+          plant.name.toLowerCase().includes(gardenSearch.toLowerCase()) || 
+          plant.scientificName.toLowerCase().includes(gardenSearch.toLowerCase())
+        );
+
         return (
           <div className="max-w-4xl mx-auto px-4 py-8 pb-24">
             <h2 className="text-3xl font-bold text-slate-900 mb-2">My Garden</h2>
             <p className="text-slate-500 mb-8">Your personal collection of green friends.</p>
+
+            {myGarden.length > 0 && (
+              <div className="mb-6 relative">
+                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
+                 <input 
+                    type="text" 
+                    placeholder="Search your garden..." 
+                    value={gardenSearch}
+                    onChange={(e) => setGardenSearch(e.target.value)}
+                    className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
+                 />
+              </div>
+            )}
 
             {myGarden.length === 0 ? (
               <div className="text-center py-20 bg-slate-50 rounded-3xl border-2 border-dashed border-slate-200">
@@ -437,9 +456,19 @@ const App: React.FC = () => {
                   Identify a Plant
                 </button>
               </div>
+            ) : filteredGarden.length === 0 ? (
+              <div className="text-center py-12">
+                 <p className="text-slate-500">No plants found matching "{gardenSearch}"</p>
+                 <button 
+                   onClick={() => setGardenSearch('')}
+                   className="mt-2 text-emerald-600 hover:text-emerald-700 text-sm font-medium"
+                 >
+                   Clear search
+                 </button>
+              </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {myGarden.map((plant) => (
+                {filteredGarden.map((plant) => (
                   <div key={plant.id} className="relative group">
                     <PlantCard plant={plant} image={plant.imageUrl} />
                     <button

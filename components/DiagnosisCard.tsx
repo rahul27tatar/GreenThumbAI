@@ -34,18 +34,20 @@ const DiagnosisCard: React.FC<DiagnosisCardProps> = ({
   };
 
   const handleShare = async () => {
+    const shareData = {
+      title: `GreenthumbAI Diagnosis: ${result.healthStatus}`,
+      text: `Plant Health: ${result.healthStatus}\n\nDiagnosis: ${result.diagnosis}\n\nTreatment: ${result.treatment.join(', ')}\n\nDiagnosed with GreenthumbAI`,
+      url: window.location.href,
+    };
+
     if (navigator.share) {
       try {
-        await navigator.share({
-          title: `GreenthumbAI Diagnosis`,
-          text: `Plant Health: ${result.healthStatus}\nDiagnosis: ${result.diagnosis}\n\nRecommended Treatment: ${result.treatment.join(', ')}`,
-          url: window.location.href,
-        });
+        await navigator.share(shareData);
       } catch (err) {
         console.error('Error sharing:', err);
       }
     } else {
-      navigator.clipboard.writeText(`Diagnosis: ${result.diagnosis}`);
+      navigator.clipboard.writeText(`${shareData.title}\n\n${shareData.text}`);
       alert('Diagnosis copied to clipboard!');
     }
   };
@@ -73,7 +75,18 @@ const DiagnosisCard: React.FC<DiagnosisCardProps> = ({
 
       <div className="p-6 space-y-6">
         <div>
-          <h3 className="text-lg font-semibold text-slate-900 mb-1">Diagnosis Analysis</h3>
+          <div className="flex justify-between items-center mb-2">
+             <h3 className="text-lg font-semibold text-slate-900">Diagnosis Analysis</h3>
+             {!image && (
+                <button
+                  onClick={handleShare}
+                  className="flex items-center gap-2 px-3 py-1.5 bg-emerald-50 text-emerald-700 rounded-lg hover:bg-emerald-100 transition-colors text-sm font-medium"
+                >
+                  <Share2 className="w-4 h-4" />
+                  Share
+                </button>
+             )}
+          </div>
           <p className="text-slate-600 text-lg leading-relaxed">{result.diagnosis}</p>
         </div>
 
@@ -113,10 +126,12 @@ const DiagnosisCard: React.FC<DiagnosisCardProps> = ({
           {/* Product Recommendations Section */}
           {result.healthStatus !== 'Healthy' && (
             <div className="mt-8 border-t border-slate-100 pt-6">
-              <h3 className="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
-                <ShoppingBag className="w-5 h-5 text-emerald-600" />
-                Recommended Products
-              </h3>
+              <div className="flex justify-between items-center mb-4">
+                 <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                  <ShoppingBag className="w-5 h-5 text-emerald-600" />
+                  Recommended Products
+                </h3>
+              </div>
               
               {!productsResult && !isSearchingProducts && (
                  <div className="bg-slate-50 rounded-2xl p-6 text-center border border-slate-200">
